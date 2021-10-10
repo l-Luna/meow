@@ -49,6 +49,7 @@ function main()
         {"musictext",{400-217,500-17}}
     }
     self.scenes = {"testscene"}
+	self.neighbors = {-1, 2, -1, -1} -- up, right, down, left
     self.outline = "mapfade"
     function self.Update()
     end

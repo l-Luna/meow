@@ -8,7 +8,6 @@ enemies = {} -- Populate this with enemies your encounters need!
 -- enemy encounter!
 
 function OverworldStarting()
-    -- Do something here! This is called after the Overworld module is initialized.
 end
 
 function Update()
@@ -16,10 +15,11 @@ function Update()
     OWCamera.Update()
     OWUI.Update()
     Scenes.Update()
+	OWInventory.Update()
     Overworld.Update()
 end
 
-maps = {"Test2"} -- The maps to load! Leave out the .lua extension.
+maps = {"Test2", "Test3"} -- The maps to load! Leave out the .lua extension.
 
 startmap = 1 -- This is the map that gets loaded first. Use Overworld.gotoroom() to switch to a
              -- different one!
@@ -36,4 +36,5 @@ Pre       = require("Libraries/PreOverworld" )  -- Required for MEOW
 OWCamera  = require("Libraries/OWCamera"     )  -- Required for MEOW
 OWUI      = require("Libraries/OWUI"         )  -- Required for MEOW
 Scenes    = require("Libraries/Scenes"       )  -- Required for MEOW
+OWInventory = require("Libraries/OWInventory")  -- not MEOW
 Overworld = require("Libraries/Overworld"    )  -- MEOW

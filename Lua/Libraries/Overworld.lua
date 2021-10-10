@@ -122,6 +122,9 @@ return (function()
         if _EncounterStarting then
             _EncounterStarting()
         end
+		
+		-- l1.5
+		OWInventory.Init()
     end
 
     -- This function handles everything related to the creation of the UI in the overworld
@@ -161,6 +164,9 @@ return (function()
         self.movinggui = false
 
         self.movingguidown = false
+		
+		-- l1.5
+		self.playerFrozen = false
     end
 
     -- This function loads the first Player and creates some useful variables
@@ -379,7 +385,7 @@ return (function()
 
         for x = 1, #self.currentmap.events do
             ev = self.currentmap.events[x]
-            b = rect(ev.x, ev.x + ev.sprite.width, ev.y, ev.y + ev.sprite.height)
+            b = rect(ev.x, ev.x + ev.sprite.width + ev.hitboxwidth, ev.y, ev.y + ev.sprite.height + ev.hitboxheight)
             if isColliding(a, b) then
                 if ev.OnCollide then
                     ev.OnCollide(dir)
@@ -441,7 +447,7 @@ return (function()
 
         for x = 1, #self.currentmap.events do
             ev = self.currentmap.events[x]
-            b = rect(ev.x, ev.x + ev.sprite.width, ev.y, ev.y + ev.sprite.height)
+            b = rect(ev.x, ev.x + ev.sprite.width + ev.hitboxwidth, ev.y, ev.y + ev.sprite.height + ev.hitboxheight)
             if isColliding(a, b) then
                 if ev.OnInteract then
                     ev.OnInteract(dir)
@@ -554,7 +560,8 @@ return (function()
             self.UpdateMapEvents()
             self.UpdateCurrentMap()
             self.UpdateRoomTransition()
-            if (not Scenes.current) and (not self.transtoroom) and (not Scenes.justfinished) then
+			-- l1.5
+            if (not Scenes.current) and (not self.transtoroom) and (not Scenes.justfinished) and (not self.playerFrozen) then
                 if Input.Confirm == 1 then
                     self.ConfirmEventInteraction()
                 end
@@ -684,6 +691,13 @@ return (function()
                     self.player.x = self.transtoroomdata[2]
                     self.player.y = self.transtoroomdata[3]
                     self.lastanim = self.transtoroomdata[4]
+					-- l1.5
+					if self.transtoroomdata[5] == "x" then
+						self.player.x = (#self.currentmap.map[1] * 40) - 30 - self.player.sprite.width
+					end
+					if self.transtoroomdata[5] == "y" then
+						self.player.y = (#self.currentmap.map * 40) - 30 - self.player.sprite.height
+					end
                     local tab = {"IdleUp","IdleDown","IdleLeft","IdleRight"}
                     self.anim = tab[self.lastanim+1]
                     self.ticker = 0
@@ -731,6 +745,8 @@ return (function()
             local rightX = math.floor((playerPlusX + self.player.hitboxwidth) / 40) + 1
             local downX = math.floor(self.player.y / 40) + 1
             local upX = math.floor((self.player.y + self.player.hitboxheight) / 40) + 1
+			--l1.5
+			self.CheckNeighbors(leftX, rightX, upX, downX)
             movedX = not self.issolid(leftX, downX) and not self.issolid(leftX, upX) and not self.issolid(rightX, downX) and not self.issolid(rightX, upX)
             if movedX then
                 self.player.x = playerPlusX
@@ -744,7 +760,9 @@ return (function()
             local rightY = math.floor((self.player.x + self.player.hitboxwidth) / 40) + 1
             local downY = math.floor(playerPlusY / 40) + 1
             local upY = math.floor((playerPlusY + self.player.hitboxheight) / 40) + 1
-            movedY = not self.issolid(leftY, downY) and not self.issolid(leftY, upY) and not self.issolid(rightY, downY) and not self.issolid(rightY, upY)
+			--l1.5
+            self.CheckNeighbors(leftY, rightY, upY, downY)
+			movedY = not self.issolid(leftY, downY) and not self.issolid(leftY, upY) and not self.issolid(rightY, downY) and not self.issolid(rightY, upY)
             if movedY then
                 self.player.y = playerPlusY
             end
@@ -831,7 +849,7 @@ return (function()
         if (x < 1) or (x > #self.currentmap.map[1]) or (y < 1) or (y > #self.currentmap.map) then return true end
         return self.currentmap.tiles[self.currentmap.map[y][x]][2]
     end
-
+    
     -- Switches the map which is currently loaded
     function self.SwitchMap(id)
         self.unloadevents()
@@ -839,15 +857,44 @@ return (function()
         self.loadmap(id)
         self.loadevents(self.currentmap)
     end
-
-    function self.GotoRoom(id,x,y,dir)
+	
+	--l1.5
+    function self.GotoRoomAdj(id,x,y,dir,adj)
         if not self.transtoroom then
             self.transtoroom = true
-            self.transtoroomdata = {id,x,y,dir}
+            self.transtoroomdata = {id,x,y,dir,adj}
             local tab = {"IdleUp","IdleDown","IdleLeft","IdleRight"}
             self.anim = tab[self.lastanim+1]
         end
     end
+	
+	function self.GotoRoom(id,x,y,dir)
+		self.GotoRoomAdj(id,x,y,dir,"none")
+	end
+	
+	function self.CheckNeighbors(left, right, top, bottom)
+	    -- up, right, down, left
+	    if (left < 1) or (right < 1) then
+		    if self.currentmap.neighbors[4] ~= -1 then
+			    self.GotoRoomAdj(self.currentmap.neighbors[4], 20, self.player.y, 2, "x")
+			end
+		end
+		if (top < 0) or (bottom < 0) then
+		    if self.currentmap.neighbors[1] ~= -1 then
+			    self.GotoRoomAdj(self.currentmap.neighbors[1], self.player.x, 20, 0, "y")
+			end
+        end
+		if (left > #self.currentmap.map[1]) or (right > #self.currentmap.map[1]) then
+		    if self.currentmap.neighbors[2] ~= -1 then
+			    self.GotoRoom(self.currentmap.neighbors[2], 20, self.player.y, 3)
+			end
+		end
+		if (top > #self.currentmap.map) or (bottom > #self.currentmap.map) then
+		    if self.currentmap.neighbors[3] ~= -1 then
+			    self.GotoRoom(self.currentmap.neighbors[3], self.player.x, 20, 1)
+			end
+		end
+	end
 
     -- Loads a map
     function self.loadmap(id)
