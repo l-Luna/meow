@@ -122,9 +122,9 @@ return (function()
         if _EncounterStarting then
             _EncounterStarting()
         end
-		
-		-- l1.5
-		OWInventory.Init()
+        
+        -- l1.5
+        OWInventory.Init()
     end
 
     -- This function handles everything related to the creation of the UI in the overworld
@@ -164,9 +164,9 @@ return (function()
         self.movinggui = false
 
         self.movingguidown = false
-		
-		-- l1.5
-		self.playerFrozen = false
+        
+        -- l1.5
+        self.playerFrozen = false
     end
 
     -- This function loads the first Player and creates some useful variables
@@ -508,30 +508,30 @@ return (function()
 
     -- Main update function of the module
     function self.Update()
-		if self.transfrombattle then
-			if not self.transdir then
-				self.backcover.alpha = self.backcover.alpha + 0.05
-				if self.backcover.alpha >= 1 then
-					self.backcover.alpha = 1
-					self.roomcoverlayer.alpha = 1
-					self.transdir = true
-					self.inbattle = false
-					self.transtobattle = false
-					OWCamera.MoveTo(self.precamera[1], self.precamera[2])
-					self.showmap()
-					self.player.sprite.alpha = 1
-					self.player.loaded = true
-					self.player.sprite.layer = "AboveBulletDark"
+        if self.transfrombattle then
+            if not self.transdir then
+                self.backcover.alpha = self.backcover.alpha + 0.05
+                if self.backcover.alpha >= 1 then
+                    self.backcover.alpha = 1
+                    self.roomcoverlayer.alpha = 1
+                    self.transdir = true
+                    self.inbattle = false
+                    self.transtobattle = false
+                    OWCamera.MoveTo(self.precamera[1], self.precamera[2])
+                    self.showmap()
+                    self.player.sprite.alpha = 1
+                    self.player.loaded = true
+                    self.player.sprite.layer = "AboveBulletDark"
                     Audio.LoadFile(music)
-				end
-			else
-				if (self.roomcoverlayer.alpha > 0) then
-					self.roomcoverlayer.alpha = self.roomcoverlayer.alpha - 0.05
-				else
-					self.transfrombattle = false
-				end
-			end
-		end
+                end
+            else
+                if (self.roomcoverlayer.alpha > 0) then
+                    self.roomcoverlayer.alpha = self.roomcoverlayer.alpha - 0.05
+                else
+                    self.transfrombattle = false
+                end
+            end
+        end
         if self.transtobattle then
             if self.transtobattletype == 0 then
                 self.UpdateCYFTransition()
@@ -560,7 +560,7 @@ return (function()
             self.UpdateMapEvents()
             self.UpdateCurrentMap()
             self.UpdateRoomTransition()
-			-- l1.5
+            -- l1.5
             if (not Scenes.current) and (not self.transtoroom) and (not Scenes.justfinished) and (not self.playerFrozen) then
                 if Input.Confirm == 1 then
                     self.ConfirmEventInteraction()
@@ -691,13 +691,13 @@ return (function()
                     self.player.x = self.transtoroomdata[2]
                     self.player.y = self.transtoroomdata[3]
                     self.lastanim = self.transtoroomdata[4]
-					-- l1.5
-					if self.transtoroomdata[5] == "x" then
-						self.player.x = (#self.currentmap.map[1] * 40) - 30 - self.player.sprite.width
-					end
-					if self.transtoroomdata[5] == "y" then
-						self.player.y = (#self.currentmap.map * 40) - 30 - self.player.sprite.height
-					end
+                    -- l1.5
+                    if self.transtoroomdata[5] == "x" then
+                        self.player.x = (#self.currentmap.map[1] * 40) - 30 - self.player.sprite.width
+                    end
+                    if self.transtoroomdata[5] == "y" then
+                        self.player.y = (#self.currentmap.map * 40) - 30 - self.player.sprite.height
+                    end
                     local tab = {"IdleUp","IdleDown","IdleLeft","IdleRight"}
                     self.anim = tab[self.lastanim+1]
                     self.ticker = 0
@@ -745,8 +745,8 @@ return (function()
             local rightX = math.floor((playerPlusX + self.player.hitboxwidth) / 40) + 1
             local downX = math.floor(self.player.y / 40) + 1
             local upX = math.floor((self.player.y + self.player.hitboxheight) / 40) + 1
-			--l1.5
-			self.CheckNeighbors(leftX, rightX, upX, downX)
+            --l1.5
+            self.CheckNeighbors(leftX, rightX, upX, downX)
             movedX = not self.issolid(leftX, downX) and not self.issolid(leftX, upX) and not self.issolid(rightX, downX) and not self.issolid(rightX, upX)
             if movedX then
                 self.player.x = playerPlusX
@@ -760,9 +760,9 @@ return (function()
             local rightY = math.floor((self.player.x + self.player.hitboxwidth) / 40) + 1
             local downY = math.floor(playerPlusY / 40) + 1
             local upY = math.floor((playerPlusY + self.player.hitboxheight) / 40) + 1
-			--l1.5
+            --l1.5
             self.CheckNeighbors(leftY, rightY, upY, downY)
-			movedY = not self.issolid(leftY, downY) and not self.issolid(leftY, upY) and not self.issolid(rightY, downY) and not self.issolid(rightY, upY)
+            movedY = not self.issolid(leftY, downY) and not self.issolid(leftY, upY) and not self.issolid(rightY, downY) and not self.issolid(rightY, upY)
             if movedY then
                 self.player.y = playerPlusY
             end
@@ -857,8 +857,8 @@ return (function()
         self.loadmap(id)
         self.loadevents(self.currentmap)
     end
-	
-	--l1.5
+    
+    --l1.5
     function self.GotoRoomAdj(id,x,y,dir,adj)
         if not self.transtoroom then
             self.transtoroom = true
@@ -867,34 +867,34 @@ return (function()
             self.anim = tab[self.lastanim+1]
         end
     end
-	
-	function self.GotoRoom(id,x,y,dir)
-		self.GotoRoomAdj(id,x,y,dir,"none")
-	end
-	
-	function self.CheckNeighbors(left, right, top, bottom)
-	    -- up, right, down, left
-	    if (left < 1) or (right < 1) then
-		    if self.currentmap.neighbors[4] ~= -1 then
-			    self.GotoRoomAdj(self.currentmap.neighbors[4], 20, self.player.y, 2, "x")
-			end
-		end
-		if (top < 0) or (bottom < 0) then
-		    if self.currentmap.neighbors[1] ~= -1 then
-			    self.GotoRoomAdj(self.currentmap.neighbors[1], self.player.x, 20, 0, "y")
-			end
+    
+    function self.GotoRoom(id,x,y,dir)
+        self.GotoRoomAdj(id,x,y,dir,"none")
+    end
+    
+    function self.CheckNeighbors(left, right, top, bottom)
+        -- up, right, down, left
+        if (left < 1) or (right < 1) then
+            if self.currentmap.neighbors[4] ~= -1 then
+                self.GotoRoomAdj(self.currentmap.neighbors[4], 20, self.player.y, 2, "x")
+            end
         end
-		if (left > #self.currentmap.map[1]) or (right > #self.currentmap.map[1]) then
-		    if self.currentmap.neighbors[2] ~= -1 then
-			    self.GotoRoom(self.currentmap.neighbors[2], 20, self.player.y, 3)
-			end
-		end
-		if (top > #self.currentmap.map) or (bottom > #self.currentmap.map) then
-		    if self.currentmap.neighbors[3] ~= -1 then
-			    self.GotoRoom(self.currentmap.neighbors[3], self.player.x, 20, 1)
-			end
-		end
-	end
+        if (top < 0) or (bottom < 0) then
+            if self.currentmap.neighbors[1] ~= -1 then
+                self.GotoRoomAdj(self.currentmap.neighbors[1], self.player.x, 20, 0, "y")
+            end
+        end
+        if (left > #self.currentmap.map[1]) or (right > #self.currentmap.map[1]) then
+            if self.currentmap.neighbors[2] ~= -1 then
+                self.GotoRoom(self.currentmap.neighbors[2], 20, self.player.y, 3)
+            end
+        end
+        if (top > #self.currentmap.map) or (bottom > #self.currentmap.map) then
+            if self.currentmap.neighbors[3] ~= -1 then
+                self.GotoRoom(self.currentmap.neighbors[3], self.player.x, 20, 1)
+            end
+        end
+    end
 
     -- Loads a map
     function self.loadmap(id)
@@ -945,8 +945,8 @@ return (function()
             self.currentmap.events[x].sprite.alpha = 0
         end
     end
-	
-	-- Take a guess
+    
+    -- Take a guess
     function self.showmap()
         for y = 1, #self.currentmap.map[1] do
             for x = 1, #self.currentmap.map do
@@ -1017,7 +1017,7 @@ return (function()
         self.transtoenemysprite = CreateSprite(enemydata[1],"SuperTop")
         self.transtoenemysprite.MoveTo(enemydata[2]+OWCamera.x,enemydata[3]+OWCamera.y)
         self.movetotimer = 20
-		self.precamera = {OWCamera.x,OWCamera.y}
+        self.precamera = {OWCamera.x,OWCamera.y}
 
         self.oldcykbgy = CYK.Background[1]["startY"]
         self.oldcykbgy2 = CYK.Background[2]["startY"]
@@ -1038,7 +1038,7 @@ return (function()
         self.fakesoul.layer = "SuperTop"
         self.fakesoul.MoveToAbs(Player.absx,Player.absy)
         self.fakesoul.alpha = 1
-		self.precamera = {OWCamera.x,OWCamera.y}
+        self.precamera = {OWCamera.x,OWCamera.y}
         Player.MoveToAbs(Player.absx-OWCamera.x,Player.absy-OWCamera.y,true)
         self.fakesoul.MoveTo(self.fakesoul.x-OWCamera.x,self.fakesoul.y-OWCamera.y)
         self.player.sprite.x = self.player.sprite.x-OWCamera.x
@@ -1099,12 +1099,12 @@ return (function()
         unescape = false
         self.inbattle = true
     end
-	
-	function callback()
-		self.backcover.alpha = 0
-		self.transfrombattle = true
-		self.transdir = false
-	end
+    
+    function callback()
+        self.backcover.alpha = 0
+        self.transfrombattle = true
+        self.transdir = false
+    end
 
     -- Unloads the Player
     function self.unloadplayer(player)

@@ -6,6 +6,7 @@ function main()
     self.x = 40 -- The position you want the player to start at.
     self.y = 350 -- The position you want the player to start at.
     self.namesprite = "face"
+    self.equipPortrait = "equipPortrait"
     self.speed = 2
     self.hitboxwidth = 30
     self.hitboxheight = 22
@@ -24,8 +25,7 @@ function main()
         WalkDown  =  {  { 1, 2, 3, 0 }, 10 ,{19,38} },
         f         =  {  { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 }, 10 ,{19,38} },
     }
-    function self.Update() -- This is a little [hold x to run] thing I made quickly.
-		-- l1.5
+    function self.Update() -- Running
         if (Input.Cancel > 0) or (OWInventory.AutoRun) then
             if self.speed < 4 then
                 self.speed = self.speed + 0.2
