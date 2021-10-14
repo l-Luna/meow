@@ -13,10 +13,14 @@ function main()
     self.hitboxwidth = 30
     self.hitboxheight = 22
     self.size = {2,2}
+    
     self.hp = 90
     self.maxhp = 90
-    --Player.SetMaxHPShift(90,1.7,true,true) -- set kris' max hp to 90
-    --Player.hp = 90
+    
+    self.attack = 19
+    self.defense = 6
+    self.magic = 0
+    
     self.color = { 0, 1, 1 }
     self.animations = {
         IdleLeft  =  {  { 0          }, 0  ,{19,38} },

@@ -19,12 +19,15 @@ return (function()
         self.itemDesc = {}
         self.itemDesc.isactive = false
         
-        -- Equip and Powers menu
+        -- Equip and Power menus
         self.charSelected = 0
-        
         self.charPortraits = {}
         self.charNameLabel = {}
-        self.charDesc = {}
+        
+        -- Power
+        self.attrIcons = {}
+        self.attrLabels = {}
+        self.attrValues = {}
         
         -- Configs menu
         self.configLabel = {}
@@ -205,6 +208,23 @@ return (function()
             
             self.charDesc = self.CreateLabel("[instant][font:uidialog2]" .. "LV" .. self.lv .. " " .. chara.title .. "\n" .. chara.desc, 320)
             OWCamera.Attach(self.charDesc, 275, 340)
+            
+            -- TODO: add other attributes
+            self.attrIcons[1] = self.CreateScaled("inventory/attack")
+            self.attrIcons[2] = self.CreateScaled("inventory/defense")
+            self.attrIcons[3] = self.CreateScaled("inventory/magic")
+            self.attrLabels[1] = self.CreateLabel("Attack:")
+            self.attrLabels[2] = self.CreateLabel("Defense:")
+            self.attrLabels[3] = self.CreateLabel("Magic:")
+            self.attrValues[1] = self.CreateLabel(chara.attack)
+            self.attrValues[2] = self.CreateLabel(chara.defense)
+            self.attrValues[3] = self.CreateLabel(chara.magic)
+            
+            for i=1,#self.attrIcons do
+                OWCamera.Attach(self.attrIcons[i], 135 - 50, 250 - i * 25)
+                OWCamera.Attach(self.attrLabels[i], 135 - 30, 240 - i * 25)
+                OWCamera.Attach(self.attrValues[i], 235, 240 - i * 25)
+            end
         elseif self.selected == 3 then
             self.uisoul.alpha = 1
             self.configSelected = 0
@@ -268,6 +288,21 @@ return (function()
         for i=0,#self.charPortraits do
             if self.charPortraits[i] and self.charPortraits[i].isactive then
                 self.charPortraits[i].Remove()
+            end
+        end
+        for i=1,#self.attrIcons do
+            if self.attrIcons[i] then
+                self.attrIcons[i].Remove()
+            end
+        end
+        for i=1,#self.attrLabels do
+            if self.attrLabels[i] then
+                self.attrLabels[i].Remove()
+            end
+        end
+        for i=1,#self.attrValues do
+            if self.attrValues[i] then
+                self.attrValues[i].Remove()
             end
         end
         if self.configLabel and self.configLabel.isactive then
@@ -437,6 +472,10 @@ return (function()
                 OWCamera.Attach(self.charNameLabel, 165 - 0.5 * self.charNameLabel.GetTextWidth(), 340)
                 
                 self.charDesc.SetText("[instant][font:uidialog2]" .. "LV" .. self.lv .. " " .. chara.title .. "\n" .. chara.desc)
+                
+                self.attrValues[1].SetText("[instant][font:uidialog2]" .. tostring(chara.attack))
+                self.attrValues[2].SetText("[instant][font:uidialog2]" .. tostring(chara.defense))
+                self.attrValues[3].SetText("[instant][font:uidialog2]" .. tostring(chara.magic))
             end
             
             self.charSelectHeart.absx = self.charPortraits[self.charSelected + 1].absx

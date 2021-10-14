@@ -10,8 +10,14 @@ function main()
     self.namesprite = "face"
     self.equipPortrait = "equipPortrait"
     self.size = {1, 1} -- The player's size.
+    
     self.hp = 20
     self.maxhp = 20
+    
+    self.attack = 4
+    self.defense = 22
+    self.magic = 0
+    
     self.speed = 2
     self.hitboxwidth = 22
     self.hitboxheight = 22
