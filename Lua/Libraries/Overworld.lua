@@ -128,34 +128,47 @@ return (function()
     end
 
     -- This function handles everything related to the creation of the UI in the overworld
-    -- TODO: Add more UI elements for each team member. Possibly use a loop?
     function self.CreateOWPlayerUI()
-        -- UI that appears when a bullet is near
         self.bottombar = CreateSprite("bottombar", "AboveBulletDark")
-
-        -- HP bar of the first Player
-        self.hpbar = CreateSprite("hpsliver", "AboveBulletDark")
-        self.hpbar.SetAnchor(0, 0)
-        self.hpbar.SetPivot(0, 0)
-        self.hpbar.color = self.player.color
-
-        -- HP text of the first Player
-        self.hptext = CreateText("", { 0, 0 }, 999, "AboveBulletDark")
-        self.hptext.progressmode = "none"
-        self.hptext.HideBubble()
-
-        -- Max HP text of the first Player
-        self.maxhptext = CreateText("", { 0, 0 }, 999, "AboveBulletDark")
-        self.maxhptext.progressmode = "none"
-        self.maxhptext.HideBubble()
-
-        if self.deltarune then
-            self.faceui = CreateSprite(self.player.folder .. "/" .. self.player.namesprite, "AboveBulletDark")
+        self.hplabel = {}
+        self.hpbar = {}
+        self.hptext = {}
+        self.maxhptext = {}
+        self.faceui = {}
+        self.uinametext = {}
+        
+        local count = #self.party
+        for i=1,count do
+            -- HP label
+            self.hplabel[i] = CreateSprite("hpLabel", "AboveBulletDark")
+            self.hplabel[i].SetAnchor(0, 0)
+            self.hplabel[i].SetPivot(0, 0)
+            self.hplabel[i].color = {1, 1, 1}
+            
+            -- HP bar of the player
+            self.hpbar[i] = CreateSprite("hpsliver", "AboveBulletDark")
+            self.hpbar[i].SetAnchor(0, 0)
+            self.hpbar[i].SetPivot(0, 0)
+            self.hpbar[i].color = self.party[i].color
+            
+            -- HP text of the player
+            self.hptext[i] = CreateText("", { 0, 0 }, 999, "AboveBulletDark")
+            self.hptext[i].progressmode = "none"
+            self.hptext[i].HideBubble()
+            
+            -- Max HP text of the player
+            self.maxhptext[i] = CreateText("", { 0, 0 }, 999, "AboveBulletDark")
+            self.maxhptext[i].progressmode = "none"
+            self.maxhptext[i].HideBubble()
+        
+            if self.deltarune then
+                self.faceui[i] = CreateSprite(self.party[i].folder .. "/" .. self.party[i].namesprite, "AboveBulletDark")
+            end
+        
+            self.uinametext[i] = CreateText("", { 0, 0 }, 999, "AboveBulletDark")
+            self.uinametext[i].progressmode = "none"
+            self.uinametext[i].HideBubble()
         end
-
-        self.uinametext = CreateText("", { 0, 0 }, 999, "AboveBulletDark")
-        self.uinametext.progressmode = "none"
-        self.uinametext.HideBubble()
 
         -- This is the starting offset for the bottom health bar
         self.GUIVertOffset = -63
@@ -165,15 +178,23 @@ return (function()
 
         self.movingguidown = false
         
-        -- l1.5
         self.playerFrozen = false
     end
 
     -- This function loads the first Player and creates some useful variables
     function self.SetupFirstPlayer()
+        self.party = {}
+        local maxhp = 0
+        for i=1,#players do
+            self.party[i] = dofile(GetModName() .. "/Lua/OWPlayers/" .. players[i] .. ".lua")
+            maxhp = self.party[i].maxhp + maxhp
+        end
+        
         -- Loads the first Player's entity file
-        self.player = dofile(GetModName() .. "/Lua/OWPlayers/" .. players[1] .. ".lua")
+        self.player = self.party[1]
         self.player.loaded = true
+        
+        Player.SetMaxHPShift(maxhp, 1.7, true, true, false)
 
         -- Creates the first Player's sprite and moves it where it belongs
         self.player.sprite = CreateSprite("/" .. self.player.folder .. "/IdleDown/" .. self.player.animations.IdleDown[1][1], "AboveBulletDark")
@@ -234,20 +255,26 @@ return (function()
         -- Updates the UI's elements
         self.bottombar.y = math.floor(OWCamera.y) + 30 + math.floor(self.GUIVertOffset)
         self.bottombar.x = math.floor(OWCamera.x) + 320
-        self.hpbar.y = math.floor(OWCamera.y) + 30 + math.floor(self.GUIVertOffset)
-        self.hpbar.x = math.floor(OWCamera.x) + 341
-        self.hpbar.xscale = math.floor(((Player.hp/Player.maxhp) * 100) * 0.76)
-        self.hptext.x = math.floor(OWCamera.x) + 357
-        self.hptext.y = math.floor(OWCamera.y) + 42 + math.floor(self.GUIVertOffset)
-        self.maxhptext.x = math.floor(OWCamera.x) + 402
-        self.maxhptext.y = math.floor(OWCamera.y) + 42 + math.floor(self.GUIVertOffset)
-        self.hptext.SetText("[instant][font:HPFont]" .. Player.hp)
-        self.maxhptext.SetText("[instant][font:HPFont]" .. Player.maxhp)
-        self.faceui.y = math.floor(OWCamera.y + 39 + self.GUIVertOffset) + 0.1
-        self.faceui.x = math.floor(OWCamera.x) + 239
-        self.uinametext.SetText("[instant][font:PlayerNameFont][charspacing:2]" .. string.upper(self.player.name))
-        self.uinametext.x = math.floor(OWCamera.x) + 264
-        self.uinametext.y = math.floor(OWCamera.y) + 32 + math.floor(self.GUIVertOffset)
+        local count = #self.party
+        for i=1,#self.party do
+            local adjX = (count + 1) * 105 - i * 210
+            self.hpbar[i].y = math.floor(OWCamera.y) + 30 + math.floor(self.GUIVertOffset)
+            self.hpbar[i].x = math.floor(OWCamera.x) + 341 - adjX
+            self.hpbar[i].xscale = math.floor(((self.party[i].hp/self.party[i].maxhp) * 100) * 0.76)
+            self.hplabel[i].x = math.floor(OWCamera.x) + 323 - adjX
+            self.hplabel[i].y = self.bottombar.y
+            self.hptext[i].x = math.floor(OWCamera.x) + 357 - adjX
+            self.hptext[i].y = math.floor(OWCamera.y) + 42 + math.floor(self.GUIVertOffset)
+            self.maxhptext[i].x = math.floor(OWCamera.x) + 402 - adjX
+            self.maxhptext[i].y = math.floor(OWCamera.y) + 42 + math.floor(self.GUIVertOffset)
+            self.hptext[i].SetText("[instant][font:HPFont]" .. self.party[i].hp)
+            self.maxhptext[i].SetText("[instant][font:HPFont]" .. self.party[i].maxhp)
+            self.faceui[i].y = math.floor(OWCamera.y + 39 + self.GUIVertOffset) + 0.1
+            self.faceui[i].x = math.floor(OWCamera.x) + 255 - 16 - adjX
+            self.uinametext[i].SetText("[instant][font:PlayerNameFont][charspacing:2]" .. string.upper(self.party[i].name))
+            self.uinametext[i].x = math.floor(OWCamera.x) + 280 - 16 - adjX
+            self.uinametext[i].y = math.floor(OWCamera.y) + 32 + math.floor(self.GUIVertOffset)
+        end
     end
 
 
@@ -1054,7 +1081,7 @@ return (function()
         end
         local a = Audio["hurtsound"]
         Audio["hurtsound"] = "empty"
-        Player.SetMaxHPShift(Player.maxhp-Player.maxhpshift,1.7,true,true)
+        Player.SetMaxHPShift(Player.maxhp-Player.maxhpshift,1.7,true,true,false)
         Audio["hurtsound"] = a
         Player.sprite.alpha = 1
         Player.Hurt(0, 0)
@@ -1076,11 +1103,16 @@ return (function()
             end
             self.mapOutline.alpha = 0
             self.fakesoul.alpha = 0
-            self.hpbar.alpha = 0
-            self.hptext.alpha = 0
-            self.maxhptext.alpha = 0
-            self.faceui.alpha = 0
-            self.uinametext.alpha = 0
+            
+            for i=1,#self.party do
+                self.hplabel[i].alpha = 0
+                self.hpbar[i].alpha = 0
+                self.hptext[i].alpha = 0
+                self.maxhptext[i].alpha = 0
+                self.faceui[i].alpha = 0
+                self.uinametext[i].alpha = 0
+            end
+            
             for i = #HPChangeTexts, 1, -1 do
                 local HPChangeText = HPChangeTexts[i]
                 for j = 1, #HPChangeText do

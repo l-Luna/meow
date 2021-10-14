@@ -2,10 +2,16 @@ function main()
     local self
     self = { }
     self.name = "Frisk" -- The player name. Used for the bottom bar gui.
+    self.title = "Human"
+    self.desc = "Body contains a human SOUL."
     self.folder = "frisk" -- The folder the sprites are in
     self.x = 40 -- The position you want the player to start at.
     self.y = 350 -- The position you want the player to start at.
+    self.namesprite = "face"
+    self.equipPortrait = "equipPortrait"
     self.size = {1, 1} -- The player's size.
+    self.hp = 20
+    self.maxhp = 20
     self.speed = 2
     self.hitboxwidth = 22
     self.hitboxheight = 22
@@ -20,7 +26,7 @@ function main()
         WalkUp    =  {  { 0, 1, 2, 1 }, 10 ,{12,29} },
         WalkDown  =  {  { 0, 1, 2, 1 }, 10 ,{12,29} },
     }
-    function self.Update() -- This is a little [hold x to run] thing I made quickly.
+    function self.Update()
     end
     return self -- Don't remove this line
 end

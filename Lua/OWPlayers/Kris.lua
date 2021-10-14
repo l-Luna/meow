@@ -2,6 +2,8 @@ function main()
     local self
     self = { }
     self.name = "Kris" -- The player name. Used for the bottom bar gui.
+    self.title = "Tactician"
+    self.desc = "Commands the party with ACTs."
     self.folder = "kris" -- The folder the sprites are in
     self.x = 40 -- The position you want the player to start at.
     self.y = 350 -- The position you want the player to start at.
@@ -11,8 +13,10 @@ function main()
     self.hitboxwidth = 30
     self.hitboxheight = 22
     self.size = {2,2}
-    Player.SetMaxHPShift(90,1.7,true,true) -- set kris' max hp to 90
-    Player.hp = 90
+    self.hp = 90
+    self.maxhp = 90
+    --Player.SetMaxHPShift(90,1.7,true,true) -- set kris' max hp to 90
+    --Player.hp = 90
     self.color = { 0, 1, 1 }
     self.animations = {
         IdleLeft  =  {  { 0          }, 0  ,{19,38} },

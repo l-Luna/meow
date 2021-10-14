@@ -39,7 +39,7 @@ return (function()
         self.options = {}
         self.frames = {}
         for i=0,3 do
-            self.options[i] = self.CreateScaled("inventory/options/"..i.."_noSelect")
+            self.options[i] = CreateSprite("inventory/options/"..i.."_noSelect", "AboveBulletDark")
             self.frames[i] = CreateSprite("inventory/frames/"..i, "AboveBulletDark")
             self.frames[i].alpha = 0
             OWCamera.Attach(self.frames[i], 640 / 2, 440 / 2)
@@ -188,24 +188,23 @@ return (function()
             self.SetupItemList()
         elseif self.selected == 2 then
             self.charSelectHeart.alpha = 1
-            -- TODO: actual party support
             -- all 25x20 (scaled to 50x40)
-            local sprites = {Overworld.player.folder .. "/" .. Overworld.player.equipPortrait}
-            sprites[2] = sprites[1]
-            sprites[3] = sprites[1]
-            local count = #sprites - 1
-            for i = 0,count do
-                self.charPortraits[i] = self.CreateScaled(sprites[i + 1])
+            local count = #Overworld.party
+            for i=1,count do
+                local sprite = Overworld.party[i].folder .. "/" .. Overworld.party[i].equipPortrait
+                self.charPortraits[i] = self.CreateScaled(sprite)
                 self.charPortraits[i].color = {0.5, 0.5, 0.5}
-                OWCamera.Attach(self.charPortraits[i], 165 - (count * 25) + (i * 50), 295)
+                OWCamera.Attach(self.charPortraits[i], 165 - ((count + 1) * 25) + (i * 50), 295)
             end
-            self.charPortraits[self.charSelected].color = {1, 1, 1}
+            self.charPortraits[self.charSelected + 1].color = {1, 1, 1}
             
-            self.charNameLabel = self.CreateLabel(Overworld.player.name)
+            local chara = Overworld.party[self.charSelected + 1]
+            
+            self.charNameLabel = self.CreateLabel(chara.name)
             OWCamera.Attach(self.charNameLabel, 165 - 0.5 * self.charNameLabel.GetTextWidth(), 340)
             
-            self.charDesc = self.CreateLabel("LV" .. self.lv .. " Human" .. "\n" .. "Body contains a human SOUL.", 300)
-            OWCamera.Attach(self.charDesc, 325, 340)
+            self.charDesc = self.CreateLabel("[instant][font:uidialog2]" .. "LV" .. self.lv .. " " .. chara.title .. "\n" .. chara.desc, 320)
+            OWCamera.Attach(self.charDesc, 275, 340)
         elseif self.selected == 3 then
             self.uisoul.alpha = 1
             self.configSelected = 0
@@ -416,26 +415,32 @@ return (function()
                 self.hideButtons = true
             end
         elseif self.selected == 2 then
-            -- TODO: Actual party support
             local changed = false
             if Input.Right == 1 then
-                -- ???
-                self.charSelected = (self.charSelected + 1) % (#self.charPortraits + 1)
+                self.charSelected = (self.charSelected + 1) % (#self.charPortraits)
                 changed = true
             elseif Input.Left == 1 then
-                self.charSelected = (self.charSelected - 1) % (#self.charPortraits + 1)
+                self.charSelected = (self.charSelected - 1) % (#self.charPortraits)
                 changed = true
             end
             
             if changed then
-                for i=0,#self.charPortraits do
+                for i=1,#self.charPortraits do
                     self.charPortraits[i].color = {0.5, 0.5, 0.5}
                 end
-                self.charPortraits[self.charSelected].color = {1, 1, 1}
+                self.charPortraits[self.charSelected + 1].color = {1, 1, 1}
+                
+                local chara = Overworld.party[self.charSelected + 1]
+                
+                self.charNameLabel.SetText("[instant][font:uidialog2]" .. chara.name)
+                OWCamera.Detach(self.charNameLabel)
+                OWCamera.Attach(self.charNameLabel, 165 - 0.5 * self.charNameLabel.GetTextWidth(), 340)
+                
+                self.charDesc.SetText("[instant][font:uidialog2]" .. "LV" .. self.lv .. " " .. chara.title .. "\n" .. chara.desc)
             end
             
-            self.charSelectHeart.absx = self.charPortraits[self.charSelected].absx
-            self.charSelectHeart.absy = self.charPortraits[self.charSelected].absy + 30
+            self.charSelectHeart.absx = self.charPortraits[self.charSelected + 1].absx
+            self.charSelectHeart.absy = self.charPortraits[self.charSelected + 1].absy + 30
         elseif self.selected == 3 then
             if Input.Up == 1 then
                 self.configSelected = (self.configSelected - 1) % #self.configs

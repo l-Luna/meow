@@ -24,7 +24,7 @@ maps = {"Test2", "Test3"} -- The maps to load! Leave out the .lua extension.
 startmap = 1 -- This is the map that gets loaded first. Use Overworld.gotoroom() to switch to a
              -- different one!
 
-players = {"Kris"} -- The party. Currently only the first one is used. Party support soon, maybe?
+players = {"Kris", "Frisk", "Frisk"} -- The party.
 
 function OnHit(bullet) -- Since we can't replace Player.Hurt(), we have to use a different function.
     if not Player.isHurting then
